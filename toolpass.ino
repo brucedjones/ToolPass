@@ -5,8 +5,8 @@
 // These are the SSID and PASSWORD to connect to your Wifi Network
 //  put details appropriate for your network between the quote marks,
 //  eg  #define ESP8266_SSID "YOUR_SSID"
-#define ESP8266_SSID  ""
-#define ESP8266_PASS  ""
+#define ESP8266_SSID  "Cambridge Hackspace"
+#define ESP8266_PASS  "redblueyellowgreen"
 
 // Create the ESP8266 device on pins 
 //   8 for Arduino RX (TX on ESP connects to this pin) 
