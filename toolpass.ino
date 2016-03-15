@@ -10,7 +10,7 @@
 
 // Create the ESP8266 device on pins 
 //   8 for Arduino RX (TX on ESP connects to this pin) 
-//   9 for Arduino TX (RX on ESP connects to this pin)
+//   7 for Arduino TX (RX on ESP connects to this pin)
 //
 // REMEMBER!  The ESP8266 is a 3v3 device, if your arduino is 
 //   5v powered, you MUST "level shift" TX/RX to 3v3, a zener 
@@ -29,7 +29,7 @@
 //  ground of course.   The other pins can be left floating for 
 //  normal operation.
 
-ESP8266_Simple wifi(8,9);
+ESP8266_Simple wifi(8,7);
 
 
 
