@@ -1,0 +1,6 @@
+===== Immediate Objectives =====
++ Use ESP8266
++ Send string to screen
++ Read RFID
++ Toggle relay
++ Read sensors/buttons etc
