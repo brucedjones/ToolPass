@@ -1,12 +1,13 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <ESP8266_Simple.h>
+#include "ESP8266_Serial.h"
+#include "ESP8266_Simple.h"
 
 // These are the SSID and PASSWORD to connect to your Wifi Network
 //  put details appropriate for your network between the quote marks,
 //  eg  #define ESP8266_SSID "YOUR_SSID"
-#define ESP8266_SSID  "Cambridge Hackspace"
-#define ESP8266_PASS  "redblueyellowgreen"
+#define ESP8266_SSID  "RQ3R7"
+#define ESP8266_PASS  "M3VTVM7XDT388ZR4"
 
 // Create the ESP8266 device on pins 
 //   8 for Arduino RX (TX on ESP connects to this pin) 
@@ -103,7 +104,6 @@ void loop()
   unsigned int httpResponseCode = 
     wifi.GET
     (
-      F("54.241.37.107"),     // The IP address of the server you want to contact
       80,                     // The Port to Connect to (80 is the usual "http" port)
       buffer,                 // Your buffer which currently contains the path to request
       sizeof(buffer),         // The size of the buffer
@@ -158,5 +158,5 @@ void loop()
   //   which is not a good thing, giving HTTP/1.0 to an Apache server seems to
   //   force it to avoid chunked encoding with no particular detriment.
   
-  delay(5000);  
+  delay(5000); 
 }
