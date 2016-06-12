@@ -40,7 +40,7 @@
 #define ESP8266_READY          4
 #define ESP8266_BUSY           5
 
-#if 1
+#if 0
 #define ESP82336_DEBUG(...)   Serial.print(__VA_ARGS__); 
 #define ESP82336_DEBUGLN(...) Serial.println(__VA_ARGS__); 
 #else

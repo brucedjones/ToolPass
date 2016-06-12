@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
+#include <ArduinoJson.h>
 
 #include "toolpassServer.h"
 
@@ -34,14 +35,14 @@ void ToolpassServer::Test(){
   // the buffer with strncpy_P, taking care to leave at least one byte for 
   // the null string terminator.
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
-  strncpy_P(buffer, PSTR("/esp8266-hello.html?Me=Visitor"), sizeof(buffer)-1);
+  strncpy_P(buffer, PSTR("/api/v1"), sizeof(buffer)-1);
   
   // For fun, let's add a variable parameter to our fixed request path, first the
   // parameter name itself, which is fixed we will store in FLASH, and then
   // and then our value, in this case the result of millis which we insert
   // into the string with ltoa();
-  strncpy_P(buffer+strlen(buffer), PSTR("&Millis="), sizeof(buffer)-strlen(buffer)-1);
-  ltoa(millis(), buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
+  //strncpy_P(buffer+strlen(buffer), PSTR("&Millis="), sizeof(buffer)-strlen(buffer)-1);
+  //ltoa(millis(), buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
     
   // Now we can send the http request and get it's HTTP Response Code If Possible
   //  Common response codes: 200 = OK
@@ -61,8 +62,8 @@ void ToolpassServer::Test(){
       80,                     // The Port to Connect to (80 is the usual "http" port)
       buffer,                 // Your buffer which currently contains the path to request
       sizeof(buffer),         // The size of the buffer
-      F("sparks.gogo.co.nz"), // Optional hostname you are connecting to(* see below)
-      2                       // Get from line 2 of the body, no headers (use 0 to get headers)
+      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
+      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
                               // responses often have a leading newline, hence starting 
                               // from line 2 here, adjust as necessary
     );
@@ -73,6 +74,14 @@ void ToolpassServer::Test(){
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
+    StaticJsonBuffer<250> jsonBuffer;
+    JsonObject& res = jsonBuffer.parseObject(buffer);
+    float version = res["api_version"];
+    const char *status = res["status"];
+    debugPrinter->println("API Version");
+    debugPrinter->println(version);
+    debugPrinter->println("Status");
+    debugPrinter->println(status);
   }
   else
   {
