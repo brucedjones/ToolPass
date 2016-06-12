@@ -24,6 +24,8 @@ void setup()
 
 void loop()
 {
-  toolpass->Test();
+  //toolpass->Test();
+  //toolpass->ToolOff(1);
+  toolpass->Log(1,1,59.01,22.43);
   delay(5000); 
 }
