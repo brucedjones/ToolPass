@@ -79,12 +79,11 @@ void ToolpassServer::Test()
   }
 }
 
-bool ToolpassServer::ToolOn(int tool_id,int user_id)
+bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
 {
-	char buffer[250]; // Remember, SRAM is very limited, think carefully about
+  bool authorized = false;
+  char buffer[250]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
-
-  
 
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
   strncpy_P(buffer, PSTR("/api/v1/tool-on"), sizeof(buffer)-1);
@@ -95,8 +94,8 @@ bool ToolpassServer::ToolOn(int tool_id,int user_id)
   // into the string with ltoa();
 
 
-  strncpy_P(buffer+strlen(buffer), PSTR("?user="), sizeof(buffer)-strlen(buffer)-1);
-  ltoa(user_id, buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
+  strncpy_P(buffer+strlen(buffer), PSTR("?card="), sizeof(buffer)-strlen(buffer)-1);
+  strncpy(buffer+strlen(buffer),user_id,64-strlen(buffer));
 
   strncpy_P(buffer+strlen(buffer), PSTR("&tool_id="), sizeof(buffer)-strlen(buffer)-1);
   ltoa(tool_id, buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
@@ -126,7 +125,8 @@ bool ToolpassServer::ToolOn(int tool_id,int user_id)
     debugPrinter->println(buffer);
     StaticJsonBuffer<250> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
-    const char *tool_on = res["tool_on"];
+    const char *tool_on = res["status"];
+    if(tool_on[0] != 'e'){authorized = true;}
     debugPrinter->println("Tool on:");
     debugPrinter->println(tool_on);
   }
@@ -145,24 +145,22 @@ bool ToolpassServer::ToolOn(int tool_id,int user_id)
       debugPrinter->println(httpResponseCode);
     }
   }
+
+  return authorized;
 }
 
-void ToolpassServer::ToolOff(int tool_id)
+void ToolpassServer::ToolOff(const char *user_id, int tool_id)
 {
 	char buffer[250]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
 
-  
-
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
   strncpy_P(buffer, PSTR("/api/v1/tool-off"), sizeof(buffer)-1);
+
+  strncpy_P(buffer+strlen(buffer), PSTR("?card="), sizeof(buffer)-strlen(buffer)-1);
+  strncpy(buffer+strlen(buffer),user_id,64-strlen(buffer));
   
-// For fun, let's add a variable parameter to our fixed request path, first the
-  // parameter name itself, which is fixed we will store in FLASH, and then
-  // and then our value, in this case the result of millis which we insert
-  // into the string with ltoa();
-  strncpy_P(buffer+strlen(buffer), PSTR("?tool_id="), sizeof(buffer)-strlen(buffer)-1);
-  //dtostrf(val, 4, 6, buff); //4 is mininum width, 6 is precision
+  strncpy_P(buffer+strlen(buffer), PSTR("&tool_id="), sizeof(buffer)-strlen(buffer)-1);
   ltoa(tool_id, buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
 
   debugPrinter->print("Requesting ");
@@ -190,7 +188,7 @@ void ToolpassServer::ToolOff(int tool_id)
     StaticJsonBuffer<250> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     const char *tool_on = res["tool_on"];
-    debugPrinter->println("Tool on:");
+    debugPrinter->println("Tool off:");
     debugPrinter->println(tool_on);
   }
   else
@@ -210,7 +208,7 @@ void ToolpassServer::ToolOff(int tool_id)
   }
 }
 
-void ToolpassServer::Log(int user_id, int tool_id, float seconds, float temperature)
+void ToolpassServer::Log(const char *user_id, int tool_id, float seconds, float temperature)
 {
 	char buffer[250]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
@@ -220,14 +218,8 @@ void ToolpassServer::Log(int user_id, int tool_id, float seconds, float temperat
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
   strncpy_P(buffer, PSTR("/api/v1/tool-log"), sizeof(buffer)-1);
   
-// For fun, let's add a variable parameter to our fixed request path, first the
-  // parameter name itself, which is fixed we will store in FLASH, and then
-  // and then our value, in this case the result of millis which we insert
-  // into the string with ltoa();
-
-
-  strncpy_P(buffer+strlen(buffer), PSTR("?user="), sizeof(buffer)-strlen(buffer)-1);
-  ltoa(user_id, buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
+  strncpy_P(buffer+strlen(buffer), PSTR("?card="), sizeof(buffer)-strlen(buffer)-1);
+  strncpy(buffer+strlen(buffer),user_id,64-strlen(buffer));
 
   strncpy_P(buffer+strlen(buffer), PSTR("&tool_id="), sizeof(buffer)-strlen(buffer)-1);
   ltoa(tool_id, buffer+strlen(buffer), 10); // Note "10" is Base10, not a length
@@ -263,7 +255,7 @@ void ToolpassServer::Log(int user_id, int tool_id, float seconds, float temperat
     StaticJsonBuffer<250> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     const char *tool_on = res["tool_on"];
-    debugPrinter->println("Tool on:");
+    debugPrinter->println("Logging:");
     debugPrinter->println(tool_on);
   }
   else

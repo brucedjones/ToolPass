@@ -25,7 +25,9 @@ void setup()
 void loop()
 {
   //toolpass->Test();
-  //toolpass->ToolOff(1);
-  toolpass->Log(1,1,59.01,22.43);
+  bool auth = toolpass->ToolOn("bbb",2);
+  Serial.println(auth);
+  //toolpass->ToolOff("bbb",1);
+  //toolpass->Log("bbb",1,59.01,22.43);
   delay(5000); 
 }
