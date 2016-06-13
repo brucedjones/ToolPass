@@ -22,7 +22,7 @@ ToolpassServer::~ToolpassServer()
 void ToolpassServer::Test()
 {
   
-  char buffer[250]; // Remember, SRAM is very limited, think carefully about
+  char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
 
   
@@ -53,7 +53,7 @@ void ToolpassServer::Test()
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
-    StaticJsonBuffer<250> jsonBuffer;
+    StaticJsonBuffer<500> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     float version = res["api_version"];
     const char *status = res["status"];
@@ -82,7 +82,7 @@ void ToolpassServer::Test()
 bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
 {
   bool authorized = false;
-  char buffer[250]; // Remember, SRAM is very limited, think carefully about
+  char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
 
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
@@ -123,10 +123,10 @@ bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
-    StaticJsonBuffer<250> jsonBuffer;
+    StaticJsonBuffer<500> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     const char *tool_on = res["status"];
-    if(tool_on[0] != 'e'){authorized = true;}
+    if(tool_on[0] == 'o' && tool_on[1] == 'k') authorized = true;
     debugPrinter->println("Tool on:");
     debugPrinter->println(tool_on);
   }
@@ -151,7 +151,7 @@ bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
 
 void ToolpassServer::ToolOff(const char *user_id, int tool_id)
 {
-	char buffer[250]; // Remember, SRAM is very limited, think carefully about
+	char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
 
   memcpy(buffer, 0, sizeof(buffer));     // Ensure the buffer is empty first!
@@ -185,7 +185,7 @@ void ToolpassServer::ToolOff(const char *user_id, int tool_id)
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
-    StaticJsonBuffer<250> jsonBuffer;
+    StaticJsonBuffer<500> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     const char *tool_on = res["tool_on"];
     debugPrinter->println("Tool off:");
@@ -210,7 +210,7 @@ void ToolpassServer::ToolOff(const char *user_id, int tool_id)
 
 void ToolpassServer::Log(const char *user_id, int tool_id, float seconds, float temperature)
 {
-	char buffer[250]; // Remember, SRAM is very limited, think carefully about
+	char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
 
   
@@ -252,7 +252,7 @@ void ToolpassServer::Log(const char *user_id, int tool_id, float seconds, float 
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
-    StaticJsonBuffer<250> jsonBuffer;
+    StaticJsonBuffer<500> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     const char *tool_on = res["tool_on"];
     debugPrinter->println("Logging:");
