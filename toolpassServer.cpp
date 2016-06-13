@@ -105,45 +105,59 @@ bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
   debugPrinter->print(buffer);
   debugPrinter->print(": ");
   
-  unsigned int httpResponseCode = 
-    wifi->GET
-    (
-      80,                     // The Port to Connect to (80 is the usual "http" port)
-      buffer,                 // Your buffer which currently contains the path to request
-      sizeof(buffer),         // The size of the buffer
-      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
-      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
-                              // responses often have a leading newline, hence starting 
-                              // from line 2 here, adjust as necessary
-    );
-  
-  // Now let's interpret the response code
-  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+  short numTries = 0;
+  bool success = false;
+
+  while(!success && numTries<5)
   {
-    // Our request was successfull and the response can be found in the buffer
-    debugPrinter->println("OK");
-    debugPrinter->println(buffer);
-    StaticJsonBuffer<500> jsonBuffer;
-    JsonObject& res = jsonBuffer.parseObject(buffer);
-    const char *tool_on = res["status"];
-    if(tool_on[0] == 'o' && tool_on[1] == 'k') authorized = true;
-    debugPrinter->println("Tool on:");
-    debugPrinter->println(tool_on);
-  }
-  else
-  {
-    // Oops, something went wrong.
-    if(httpResponseCode < 100)
-    {
-      // And it's on our end, but what was it?  Well we can find out easily.      
-      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
-    }
-    else
-    {
-      // It's probably a server problem
-      debugPrinter->print("HTTP Status ");
-      debugPrinter->println(httpResponseCode);
-    }
+
+	  unsigned int httpResponseCode = 
+	    wifi->GET
+	    (
+	      80,                     // The Port to Connect to (80 is the usual "http" port)
+	      buffer,                 // Your buffer which currently contains the path to request
+	      sizeof(buffer),         // The size of the buffer
+	      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
+	      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
+	                              // responses often have a leading newline, hence starting 
+	                              // from line 2 here, adjust as necessary
+	    );
+	  
+	  // Now let's interpret the response code
+	  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+	  {
+	    // Our request was successfull and the response can be found in the buffer
+	    debugPrinter->println("OK");
+	    debugPrinter->println(buffer);
+	    StaticJsonBuffer<500> jsonBuffer;
+	    JsonObject& res = jsonBuffer.parseObject(buffer);
+	    const char *tool_on = res["status"];
+	    if(tool_on[0] == 'o' && tool_on[1] == 'k') authorized = true;
+	    debugPrinter->println("Tool on:");
+	    debugPrinter->println(tool_on);
+	    success = true;
+	  }
+	  else
+	  {
+	    // Oops, something went wrong.
+	    if(httpResponseCode < 100)
+	    {
+	      // And it's on our end, but what was it?  Well we can find out easily.      
+	      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	    else
+	    {
+	      // It's probably a server problem
+	      debugPrinter->print("HTTP Status ");
+	      debugPrinter->println(httpResponseCode);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	  }
   }
 
   return authorized;
@@ -167,44 +181,58 @@ void ToolpassServer::ToolOff(const char *user_id, int tool_id)
   debugPrinter->print(buffer);
   debugPrinter->print(": ");
   
-  unsigned int httpResponseCode = 
-    wifi->GET
-    (
-      80,                     // The Port to Connect to (80 is the usual "http" port)
-      buffer,                 // Your buffer which currently contains the path to request
-      sizeof(buffer),         // The size of the buffer
-      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
-      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
-                              // responses often have a leading newline, hence starting 
-                              // from line 2 here, adjust as necessary
-    );
-  
-  // Now let's interpret the response code
-  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+  short numTries = 0;
+  bool success = false;
+
+  while(!success && numTries<5)
   {
-    // Our request was successfull and the response can be found in the buffer
-    debugPrinter->println("OK");
-    debugPrinter->println(buffer);
-    StaticJsonBuffer<500> jsonBuffer;
-    JsonObject& res = jsonBuffer.parseObject(buffer);
-    const char *tool_on = res["tool_on"];
-    debugPrinter->println("Tool off:");
-    debugPrinter->println(tool_on);
-  }
-  else
-  {
-    // Oops, something went wrong.
-    if(httpResponseCode < 100)
-    {
-      // And it's on our end, but what was it?  Well we can find out easily.      
-      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
-    }
-    else
-    {
-      // It's probably a server problem
-      debugPrinter->print("HTTP Status ");
-      debugPrinter->println(httpResponseCode);
-    }
+
+	  unsigned int httpResponseCode = 
+	    wifi->GET
+	    (
+	      80,                     // The Port to Connect to (80 is the usual "http" port)
+	      buffer,                 // Your buffer which currently contains the path to request
+	      sizeof(buffer),         // The size of the buffer
+	      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
+	      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
+	                              // responses often have a leading newline, hence starting 
+	                              // from line 2 here, adjust as necessary
+	    );
+	  
+	  // Now let's interpret the response code
+	  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+	  {
+	    // Our request was successfull and the response can be found in the buffer
+	    debugPrinter->println("OK");
+	    debugPrinter->println(buffer);
+	    StaticJsonBuffer<500> jsonBuffer;
+	    JsonObject& res = jsonBuffer.parseObject(buffer);
+	    const char *tool_off = res["tool_off"];
+	    debugPrinter->println("Tool off:");
+	    debugPrinter->println(tool_off);
+	    success = true;
+	  }
+	  else
+	  {
+	    // Oops, something went wrong.
+	    if(httpResponseCode < 100)
+	    {
+	      // And it's on our end, but what was it?  Well we can find out easily.      
+	      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	    else
+	    {
+	      // It's probably a server problem
+	      debugPrinter->print("HTTP Status ");
+	      debugPrinter->println(httpResponseCode);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	  }
   }
 }
 
@@ -233,45 +261,58 @@ void ToolpassServer::Log(const char *user_id, int tool_id, float seconds, float 
   debugPrinter->print("Requesting ");
   debugPrinter->print(buffer);
   debugPrinter->print(": ");
-  
-  unsigned int httpResponseCode = 
-    wifi->GET
-    (
-      80,                     // The Port to Connect to (80 is the usual "http" port)
-      buffer,                 // Your buffer which currently contains the path to request
-      sizeof(buffer),         // The size of the buffer
-      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
-      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
-                              // responses often have a leading newline, hence starting 
-                              // from line 2 here, adjust as necessary
-    );
-  
-  // Now let's interpret the response code
-  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+
+  short numTries = 0;
+  bool success = false;
+
+  while(!success && numTries<5)
   {
-    // Our request was successfull and the response can be found in the buffer
-    debugPrinter->println("OK");
-    debugPrinter->println(buffer);
-    StaticJsonBuffer<500> jsonBuffer;
-    JsonObject& res = jsonBuffer.parseObject(buffer);
-    const char *tool_on = res["tool_on"];
-    debugPrinter->println("Logging:");
-    debugPrinter->println(tool_on);
-  }
-  else
-  {
-    // Oops, something went wrong.
-    if(httpResponseCode < 100)
-    {
-      // And it's on our end, but what was it?  Well we can find out easily.      
-      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
-    }
-    else
-    {
-      // It's probably a server problem
-      debugPrinter->print("HTTP Status ");
-      debugPrinter->println(httpResponseCode);
-    }
+  
+	  unsigned int httpResponseCode = 
+	    wifi->GET
+	    (
+	      80,                     // The Port to Connect to (80 is the usual "http" port)
+	      buffer,                 // Your buffer which currently contains the path to request
+	      sizeof(buffer),         // The size of the buffer
+	      F("www.toolpass.io"), // Optional hostname you are connecting to(* see below)
+	      1                       // Get from line 2 of the body, no headers (use 0 to get headers)
+	                              // responses often have a leading newline, hence starting 
+	                              // from line 2 here, adjust as necessary
+	    );
+	  
+	  // Now let's interpret the response code
+	  if(httpResponseCode == 200 || httpResponseCode == ESP8266_OK)
+	  {
+	    // Our request was successfull and the response can be found in the buffer
+	    debugPrinter->println("OK");
+	    debugPrinter->println(buffer);
+	    StaticJsonBuffer<500> jsonBuffer;
+	    JsonObject& res = jsonBuffer.parseObject(buffer);
+	    const char *status = res["status"];
+	    debugPrinter->println("Logging:");
+	    debugPrinter->println(status);
+	  }
+	  else
+	  {
+	    // Oops, something went wrong.
+	    if(httpResponseCode < 100)
+	    {
+	      // And it's on our end, but what was it?  Well we can find out easily.      
+	      wifi->debugPrintError((byte)httpResponseCode, debugPrinter);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	    else
+	    {
+	      // It's probably a server problem
+	      debugPrinter->print("HTTP Status ");
+	      debugPrinter->println(httpResponseCode);
+	      debugPrinter->println("Retrying");
+	      numTries++;
+	      delay(5000);
+	    }
+	  }
   }
 }
 
