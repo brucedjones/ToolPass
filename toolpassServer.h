@@ -2,6 +2,7 @@
 #define TOOLPASS_SERVER_h
 
 #include "ESP8266_Simple.h"
+#include <SoftwareSerial.h>
 
 class ToolpassServer {
 	public:

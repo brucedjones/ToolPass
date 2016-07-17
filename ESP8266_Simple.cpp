@@ -38,7 +38,7 @@ ESP8266_Simple::ESP8266_Simple(short rxPin, short txPin)
 {
   // this->espSerial = new SoftwareSerial(rxPin,txPin);
   this->espSerial = new ESP8266_Serial(rxPin,txPin);
-  this->generalCommandTimeoutMicroseconds = 2000000;
+  this->generalCommandTimeoutMicroseconds = 5000000;
 }
 #endif
 
