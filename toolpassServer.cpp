@@ -7,11 +7,12 @@
 #include "ESP8266_Serial.h"
 #include "ESP8266_Simple.h"
 
-ToolpassServer::ToolpassServer(short rxPin, short txPin, const char *SSID, const char *Password, Print *debugPrinter){
+ToolpassServer::ToolpassServer(short rxPin, short txPin, const char *SSID, const char *Password, Print *debugPrinter, int tool_id){
 	wifi = new ESP8266_Simple(rxPin,txPin);
 	wifi->begin(9600);
 	wifi->setupAsWifiStation(SSID, Password, debugPrinter);
 	this->debugPrinter = debugPrinter;
+	this->tool_id = tool_id;
 }
 
 ToolpassServer::~ToolpassServer()
@@ -79,8 +80,9 @@ void ToolpassServer::Test()
   }
 }
 
-bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
+bool ToolpassServer::ToolOn(char *user_id)
 {
+  this->user_id = user_id;
   bool authorized = false;
   char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
@@ -163,7 +165,7 @@ bool ToolpassServer::ToolOn(const char *user_id, int tool_id)
   return authorized;
 }
 
-void ToolpassServer::ToolOff(const char *user_id, int tool_id)
+void ToolpassServer::ToolOff()
 {
 	char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!
@@ -236,7 +238,7 @@ void ToolpassServer::ToolOff(const char *user_id, int tool_id)
   }
 }
 
-void ToolpassServer::Log(const char *user_id, int tool_id, float seconds, float temperature)
+void ToolpassServer::Log(float seconds, float temperature)
 {
 	char buffer[500]; // Remember, SRAM is very limited, think carefully about
                     // how big a buffer you really need!

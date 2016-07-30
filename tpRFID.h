@@ -11,7 +11,9 @@ class tpRFID {
 		tpRFID(HardwareSerial *debugPrinter);
 		~tpRFID();
 
-		void CheckCard();
+		bool CheckCard();
+
+		char *cardID;
 	private:
 		bool hold;
 		RFID *rfid;
