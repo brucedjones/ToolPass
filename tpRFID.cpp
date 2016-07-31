@@ -24,6 +24,7 @@ tpRFID::~tpRFID()
 
 bool tpRFID::CheckCard()
 {
+  //debugPrinter->println("Tock");
 	if (rfid->isCard()) {
 		debugPrinter->println("Card Present");
         if (!hold){

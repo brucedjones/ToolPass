@@ -4,9 +4,11 @@
 #include "toolpassServer.h"
 #include "tpRFID.h"
 #include "ssid.h"
+#include "inPin.h"
 
 ToolpassServer *toolpass;
 tpRFID *rfid;
+InPin *laserPin;
 
 bool machineOn = false;
 int thisTool = 1;
@@ -17,6 +19,7 @@ void setup()
 
   toolpass = new ToolpassServer(8,7,wifiSSID, wifiPASS, &Serial, thisTool);
   rfid = new tpRFID(&Serial);
+  laserPin = new InPin(A0, 3.3, 1000000.0, 100000.0, 10, &Serial);
   
   // A blank line just for debug formatting 
   Serial.println();
@@ -42,32 +45,38 @@ void loop()
   //Serial.println(auth);
   //toolpass->ToolOff("bbb",1);
   //toolpass->Log("bbb",1,59.01,22.43);
-  bool cardScanned = rfid->CheckCard();
 
+  // Actual toolpass code below  
+  bool cardScanned = rfid->CheckCard();
   if(cardScanned) {
 
     char *cardID = rfid->cardID;
 
     if(!machineOn){    
+      //delay(5000);
       bool auth = toolpass->ToolOn(cardID);
 
       if(auth) {
         Serial.println("Switching machine on");
+        machineOn = true;
       } else {
         Serial.println("Not authorized");
       }
 
     } else {
       Serial.println("Switching machine off");
+      
+      float usage = laserPin->GetUsage();
+      if(usage>0.0) toolpass->Log(usage,21.0);
+      
       toolpass->ToolOff();
+      machineOn = false;
     }
  
   }
 
   if(machineOn) {
-    // do logging
+    laserPin->Poll();
   }
 
-  
-  //delay(1000);
 }

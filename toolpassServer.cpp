@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <ArduinoJson.h>
+#include "simpleJSON.h"
 
 #include "toolpassServer.h"
 
@@ -54,14 +54,14 @@ void ToolpassServer::Test()
     // Our request was successfull and the response can be found in the buffer
     debugPrinter->println("OK");
     debugPrinter->println(buffer);
-    StaticJsonBuffer<500> jsonBuffer;
+    /*StaticJsonBuffer<500> jsonBuffer;
     JsonObject& res = jsonBuffer.parseObject(buffer);
     float version = res["api_version"];
     const char *status = res["status"];
     debugPrinter->println("API Version");
     debugPrinter->println(version);
     debugPrinter->println("Status");
-    debugPrinter->println(status);
+    debugPrinter->println(status);*/
   }
   else
   {
@@ -131,9 +131,7 @@ bool ToolpassServer::ToolOn(char *user_id)
 	    // Our request was successfull and the response can be found in the buffer
 	    debugPrinter->println("OK");
 	    debugPrinter->println(buffer);
-	    StaticJsonBuffer<500> jsonBuffer;
-	    JsonObject& res = jsonBuffer.parseObject(buffer);
-	    const char *tool_on = res["status"];
+	    char * tool_on = SimpleJSON::GetStrKey("status",6,buffer,200);
 	    if(tool_on[0] == 'o' && tool_on[1] == 'k') authorized = true;
 	    debugPrinter->println("Tool on:");
 	    debugPrinter->println(tool_on);
@@ -207,11 +205,11 @@ void ToolpassServer::ToolOff()
 	    // Our request was successfull and the response can be found in the buffer
 	    debugPrinter->println("OK");
 	    debugPrinter->println(buffer);
-	    StaticJsonBuffer<500> jsonBuffer;
+	    /*StaticJsonBuffer<500> jsonBuffer;
 	    JsonObject& res = jsonBuffer.parseObject(buffer);
 	    const char *tool_off = res["tool_off"];
 	    debugPrinter->println("Tool off:");
-	    debugPrinter->println(tool_off);
+	    debugPrinter->println(tool_off);*/
 	    success = true;
 	  }
 	  else
@@ -288,11 +286,11 @@ void ToolpassServer::Log(float seconds, float temperature)
 	    // Our request was successfull and the response can be found in the buffer
 	    debugPrinter->println("OK");
 	    debugPrinter->println(buffer);
-	    StaticJsonBuffer<500> jsonBuffer;
+	    /*StaticJsonBuffer<500> jsonBuffer;
 	    JsonObject& res = jsonBuffer.parseObject(buffer);
 	    const char *status = res["status"];
 	    debugPrinter->println("Logging:");
-	    debugPrinter->println(status);
+	    debugPrinter->println(status);*/
 	  }
 	  else
 	  {
