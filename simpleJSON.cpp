@@ -19,11 +19,18 @@ char * SimpleJSON::GetStrKey(char * key, int keyLen, char * buffer, int bufferLe
 	}
 
 	int quoteCount = 0;
+	char *retPointer;
 	for(; i<bufferLen; i++)
 	{
 		if(buffer[i] == '"') quoteCount++;
-		if(quoteCount == 2) return &buffer[i+1];
+		if(quoteCount == 2) retPointer = &buffer[i+1];
+		if(quoteCount == 3)
+		{ 
+			buffer[i] = '\0';
+			break;
+		}
 	}
+	return retPointer;
 }
 
 int SimpleJSON::GetIntKey(char * key, int keyLen, char * buffer, int bufferLen)
