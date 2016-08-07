@@ -23,7 +23,9 @@ char * SimpleJSON::GetStrKey(char * key, int keyLen, char * buffer, int bufferLe
 	for(; i<bufferLen; i++)
 	{
 		if(buffer[i] == '"') quoteCount++;
+		// Pointer to the start of the value
 		if(quoteCount == 2) retPointer = &buffer[i+1];
+		// Null terminate the end of the value so string libraries know when to stop
 		if(quoteCount == 3)
 		{ 
 			buffer[i] = '\0';
