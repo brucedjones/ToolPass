@@ -1,33 +1,64 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 #include <string.h> 
+#include <Wire.h>
 #include "toolpassServer.h"
 #include "tpRFID.h"
 #include "ssid.h"
 #include "inPin.h"
 #include "display.h"
+#include "tpdb.h"
+#include "log.h"
 
-ToolpassServer *toolpass;
+// ToolpassServer *toolpass;
 tpRFID *rfid;
 InPin *laserPin;
 Display *disp;
+TPDB *tpdb;
+Log *tplog;
 
 bool machineOn = false;
 int thisTool = 1;
 
 void setup()
 {
-  Serial.begin(115200); // Used for debug output
+  
+  Wire.begin();
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
 
-  toolpass = new ToolpassServer(8,7,wifiSSID, wifiPASS, &Serial, thisTool);
-  rfid = new tpRFID(&Serial);
-  laserPin = new InPin(A0, 3.3, 1000000.0, 100000.0, 10, &Serial);
-  disp = new Display();
-  disp->LoggedIn("Bruce",12.78);
+  if (!SD.begin(SD_PIN)) {
+      Serial.println("No SD-card.");
+      return;
+  }
+
+  Serial.begin(9600); // Used for debug output
+
+  // toolpass = new ToolpassServer(8,7,wifiSSID, wifiPASS, &Serial, thisTool);
+  // rfid = new tpRFID(&Serial);
+  // laserPin = new InPin(A0, 3.3, 1000000.0, 100000.0, 10, &Serial);
+  // disp = new Display();
+  // disp->LoggedIn("Bruce",12.78);
+  tpdb = new TPDB("/db/userlist.db", &Serial);
+  tplog = new Log("/log/log.txt", &Serial);
   
   // A blank line just for debug formatting 
   Serial.println();
 
+  User r;
+  strcpy(r.uid, "2bcdefghabcdfgh");
+  strcpy(r.name, "2bcdefghabcdfgh");
+  r.authorized = true;
+  r.balance = 3000;
+  tpdb->ModifyUser(r);
+  // strcpy(r.uid, "2bcdefghabcdfgh");
+  // r.balance = 2000;
+  // tpdb->ModifyUser(r);
+
+  r = tpdb->GetUser("2bcdefghabcdfgh");
+  Serial.println(r.balance);
+
+  tplog->Write("Hello");
   // Relay
   //pinMode(2, OUTPUT);           // set pin to input
 }
@@ -35,6 +66,9 @@ void setup()
 
 void loop()
 {
+  
+  delay(3000);
+  tplog->Write("Hello");
   // Relay
   /*if(flip)
   {
